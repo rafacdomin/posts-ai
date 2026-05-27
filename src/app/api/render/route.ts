@@ -1,0 +1,104 @@
+import { NextResponse } from "next/server";
+import { chromium, Browser } from "playwright";
+import JSZip from "jszip";
+
+interface RenderRequest {
+  html?: string;
+  caption?: string;
+  format?: "feed" | "stories";
+}
+
+export async function POST(request: Request): Promise<Response> {
+  let browser: Browser | null = null;
+  let body: RenderRequest;
+
+  // 1. Validar se o body é um JSON válido
+  try {
+    body = await request.json() as RenderRequest;
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "Requisição inválida. O corpo do request deve estar no formato JSON." },
+      { status: 400 }
+    );
+  }
+
+  const { html, caption, format } = body;
+
+  // 2. Validar campos obrigatórios
+  if (!html || typeof html !== "string" || html.trim().length === 0) {
+    return NextResponse.json(
+      { success: false, error: "O campo 'html' é obrigatório e deve ser uma string HTML válida." },
+      { status: 400 }
+    );
+  }
+
+  if (typeof caption !== "string") {
+    return NextResponse.json(
+      { success: false, error: "O campo 'caption' é obrigatório e deve ser uma string de legenda." },
+      { status: 400 }
+    );
+  }
+
+  if (format !== "feed" && format !== "stories") {
+    return NextResponse.json(
+      { success: false, error: "O campo 'format' é obrigatório e deve ser 'feed' ou 'stories'." },
+      { status: 400 }
+    );
+  }
+
+  // 3. Definir dimensões da viewport
+  const width = 1080;
+  const height = format === "feed" ? 1350 : 1920;
+
+  try {
+    // 4. Inicializar navegador
+    browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.setViewportSize({ width, height });
+
+    // 5. Carregar conteúdo e aguardar rede/fontes
+    await page.setContent(html, { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+
+    // 6. Encontrar os slides
+    const slides = await page.$$(".slide");
+    if (slides.length === 0) {
+      throw new Error("Nenhum slide (elemento com a classe '.slide') foi encontrado no HTML fornecido.");
+    }
+
+    // 7. Renderizar screenshots de cada slide
+    const zip = new JSZip();
+    for (let i = 0; i < slides.length; i++) {
+      const slide = slides[i];
+      const screenshotBuffer = await slide.screenshot({ type: "png" });
+      zip.file(`slide-${i + 1}.png`, screenshotBuffer);
+    }
+
+    // 8. Adicionar legenda ao ZIP
+    zip.file("legenda.md", caption);
+
+    // 9. Compactar e gerar ZIP
+    const zipBuffer = await zip.generateAsync({ type: "uint8array" });
+
+    // 10. Retornar resposta binária do ZIP para download
+    return new Response(zipBuffer as unknown as BodyInit, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/zip",
+        "Content-Disposition": `attachment; filename="carrossel-${format}.zip"`,
+      },
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Erro na renderização dos slides via Playwright:", error);
+    return NextResponse.json(
+      { success: false, error: `Falha na renderização: ${errorMessage}` },
+      { status: 500 }
+    );
+  } finally {
+    // 11. Garantir que o browser sempre fecha
+    if (browser) {
+      await browser.close();
+    }
+  }
+}
