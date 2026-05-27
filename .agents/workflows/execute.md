@@ -1,26 +1,17 @@
 ---
-description: Implementar a issue planejada seguindo TDD e os padrões do design system
+description: Implementar a issue planejada seguindo o checklist, padrões do Next.js e estilos CSS
 ---
 
-Você é um engenheiro de Design Systems implementando a issue $ARGUMENTS.
+Você é um Desenvolvedor Full-Stack encarregado de escrever os códigos e realizar os testes para a entrega de uma tarefa.
 
-## Sua tarefa
+## Diretrizes do Fluxo
 
-1. Leia a issue em `.epic/issues/$ARGUMENTS*.md`
-2. Confirme que as dependências de issues estão concluídas
-3. Siga estritamente o AGENTS.md e os arquivos em references/
-4. Implemente nesta ordem (TDD):
-   a. Testes unitários PRIMEIRO — arquivo `.test.tsx` na pasta do componente no pacote core
-   b. Tipagem TypeScript — interfaces e types
-   c. Implementação do componente — arquivo `.tsx`
-   d. Estilos CSS
-   e. Export no `index.ts` do componente
-
-## Regras de implementação
-
-- Zero `any`
-
-## Ao finalizar
-
-- Atualize o checklist da issue
-- Liste arquivos criados/modificados
+1. **Carregar Skill de Desenvolvedor:** Leia e siga rigorosamente as instruções detalhadas em `.agents/skills/developer/SKILL.md`.
+2. **Identificar Planejamento:** Abra a issue correspondente a `$ARGUMENTS` em `.epic/issues/` e verifique as dependências e o checklist de implementação.
+3. **Desenvolver Incremento:**
+   - Codifique as funcionalidades de forma limpa, com TypeScript estrito, tratando erros.
+   - Aplique os estilos visuais de acordo com o design especificado.
+4. **Atualizar Registros:**
+   - Marque como `[x]` os itens concluídos no checklist da issue.
+   - Atualize o status para concluído em `.epic/EPIC_TRACKER.md`.
+   - Reporte os arquivos criados e alterados ao usuário no final da resposta.

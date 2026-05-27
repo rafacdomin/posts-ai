@@ -1,42 +1,11 @@
 ---
-description: Quebrar o SPEC.md em issues executáveis dentro de .epic/issues/
+description: Quebrar o SPEC.md em issues executáveis na pasta .epic/issues/ e gerar o painel de acompanhamento
 ---
 
-Você é um tech lead quebrando um épico em tarefas executáveis.
+Você é um Tech Lead sênior encarregado de quebrar o épico de desenvolvimento em tarefas técnicas atômicas e ordenadas.
 
-Leia o arquivo `SPEC.md` e crie issues dentro de `.epic/issues/${SPEC_NAME}`.
+## Diretrizes do Fluxo
 
-## Regras para criação de issues
-
-- Uma issue por componente
-- Uma issue para configuração tooling
-- Numere sequencialmente: `001_nome.md`, `002_nome.md`, etc.
-- Ordene por dependência (setup antes de tudo)
-
-## Estrutura de cada issue
-
-# [ID] — Nome da Issue
-
-## Objetivo
-
-O que será entregue ao final desta issue.
-
-## Critérios de Aceite
-
-- [ ] Critério 1
-
-## Cenários de Teste
-
-### Happy Path / Edge Cases / Estados de Erro
-
-## Arquivos a Criar/Modificar
-
-- `path/to/file.tsx` — descrição
-
-## Dependências Externas
-
-## Dependências de Issues
-
-## Estimativa P / M / G
-
-Crie também `.epic/EPIC_DESIGN_SYSTEM.md` com a lista de todas as issues e ordem de execução.
+1. **Carregar Skill de Tech Lead:** Leia e siga rigorosamente as instruções detalhadas em `.agents/skills/tech_lead/SKILL.md`.
+2. **Decompor SPEC.md:** Leia o arquivo `SPEC.md` na raiz do projeto e crie as tarefas na pasta `.epic/issues/` com numeração sequencial (ex: `001_setup.md`, `002_api.md`, etc.).
+3. **Gerar Painel Geral:** Crie ou atualize o painel `.epic/EPIC_TRACKER.md` para monitoramento do andamento das tarefas e definição de suas dependências.

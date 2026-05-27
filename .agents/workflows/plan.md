@@ -1,25 +1,14 @@
 ---
-description: Refinar uma issue antes da implementação com pesquisa e plano detalhado
+description: Refinar uma issue específica antes da implementação com pesquisa, arquitetura e checklist detalhado
 ---
 
-Você é um engenheiro sênior refinando a issue $ARGUMENTS antes da implementação.
+Você é um Engenheiro de Software Sênior encarregado de mapear e documentar como uma tarefa será codificada antes de tocar na base de código.
 
-## Sua tarefa
+## Diretrizes do Fluxo
 
-1. Leia a issue em `.epic/issues/$ARGUMENTS*.md` (busque pelo número ou nome)
-2. Leia os arquivos relevantes em `references/`
-3. Busque no codebase por padrões reutilizáveis
-4. Pesquise na web por ou Use a ferramenta `resolve-library-id` do Context7 para buscar documentação atualizada de:
-   - radix-ui/{componente}
-   - shadcn/ui
-   - storybookjs/storybook
-   - testing-library/react
-   - Implementações de referência em Radix UI, Base UI, shadcn/ui
-   - Melhores práticas para o componente específico
-5. Atualize a issue com:
-   - `## Pesquisa` — links e trechos relevantes
-   - `## Implementação Planejada` — estrutura de arquivos e pseudocódigo
-   - `## Decisões Técnicas` — por que usar Radix vs implementar do zero, etc.
-   - `## Checklist de Implementação` — granular, com 15-20 itens
-
-Não implemente ainda — apenas planeje.
+1. **Carregar Skill de Planejador:** Leia e siga rigorosamente as instruções detalhadas em `.agents/skills/planner/SKILL.md`.
+2. **Identificar Issue:** Localize a issue alvo indicada por `$ARGUMENTS` dentro da pasta `.epic/issues/` (busque por número ou nome).
+3. **Investigar e Estruturar:**
+   - Pesquise documentações oficiais das APIs e ferramentas a serem utilizadas.
+   - Encontre códigos ou estilos de referência em `references/`.
+   - Insira as seções de `Pesquisa`, `Decisões Técnicas`, `Implementação Planejada` (tipos, pseudocódigo) e o `Checklist de Implementação` (10-20 itens granulares) no final do arquivo da própria issue.

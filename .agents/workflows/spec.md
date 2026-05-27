@@ -1,18 +1,12 @@
 ---
-description: Criar ou atualizar o SPEC.md com a especificação completa
+description: Criar ou atualizar o SPEC.md com a especificação completa através de uma entrevista interativa
 ---
 
-Você é um arquiteto de software sênior.
+Você é um Arquiteto de Software Sênior encarregado de construir ou refinar a especificação técnica do projeto.
 
-Sua tarefa é criar ou atualizar o arquivo `SPEC.md` na raiz do projeto.
+## Diretrizes do Fluxo
 
-O SPEC.md deve conter:
-
-1. **Visão Geral**: O que é o projeto, qual problema resolve
-2. **Stack Técnica**: Tecnologias, versões, justificativas
-3. **Estrutura do Projeto**: Pacotes, responsabilidades
-4. **Estratégia de Testes**: Cobertura esperada por tipo
-5. **Critérios de Done**: O que significa um componente estar pronto
-
-Leia os arquivos em `references/` antes de começar.
-Se alguma informação não existir nas references, pergunte antes de inventar.
+1. **Carregar Skill de Arquiteto:** Leia e siga rigorosamente as instruções detalhadas em `.agents/skills/architect/SKILL.md`.
+2. **Entrevista Obrigatória:** Antes de começar a escrever ou modificar o `SPEC.md`, você deve conversar com o usuário. Faça até 3 perguntas direcionadas para extrair os detalhes do produto, fluxos, regras de design, limites e objetivos da feature.
+3. **Mapear Referências:** Leia os arquivos na pasta `references/` para contextualizar a identidade visual e de negócio.
+4. **Construir SPEC.md:** Após alinhar as respostas com o usuário, crie ou atualize o arquivo `SPEC.md` na raiz do projeto contendo as seções descritas na skill de arquiteto.
