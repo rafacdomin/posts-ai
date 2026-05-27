@@ -69,20 +69,20 @@ DEFAULT_AI_MODEL=anthropic/claude-3.5-sonnet
 ```
 
 ## Checklist de Implementação
-- [ ] 1. Criar um diretório temporário `temp-next-app` na raiz do projeto.
-- [ ] 2. Executar o comando `npx -y create-next-app@latest temp-next-app --typescript --eslint --app --src-dir --no-tailwind --use-npm --yes`.
-- [ ] 3. Mover todos os arquivos e pastas ocultas de `temp-next-app` para a raiz do workspace (incluindo `src/`, `public/`, `eslint.config.mjs`, `next.config.ts`, `package.json`, `tsconfig.json`, `next-env.d.ts`).
-- [ ] 4. Mesclar as entradas geradas de `.gitignore` com o `.gitignore` existente no projeto (mantendo regras de `.env.local` e `.next`).
-- [ ] 5. Remover o diretório temporário `temp-next-app` esvaziado.
-- [ ] 6. Modificar o arquivo `/package.json` para adicionar dependências extras (`jszip` e `lucide-react`).
-- [ ] 7. Adicionar o script `"postinstall": "playwright install chromium"` no arquivo `/package.json`.
-- [ ] 8. Executar `npm install` na raiz para consolidar e baixar todas as novas dependências (`jszip`, `lucide-react`, `playwright`).
-- [ ] 9. Executar `npx playwright install chromium` para certificar que o executável do Chromium está disponível na máquina local.
-- [ ] 10. Criar o arquivo `/.env.local.example` com os templates de variáveis de ambiente.
-- [ ] 11. Copiar o arquivo `/.env.local.example` para `/.env.local` (este arquivo será modificado manualmente depois com a API Key real).
-- [ ] 12. Criar a pasta `/identidade/` na raiz do projeto.
-- [ ] 13. Criar o arquivo `/identidade/design-guide.md` com a especificação visual detalhada do estilo Criador Solo terroso (cores, tipografia, bordas, restrições).
-- [ ] 14. Rodar o comando `npm run dev` para garantir que o servidor Next.js inicia corretamente na porta 3000.
-- [ ] 15. Acessar `http://localhost:3000` via curl ou navegador e verificar se a página padrão inicial do Next.js é exibida sem erros.
-- [ ] 16. Executar o linter `npm run lint` para garantir que o setup inicial do TypeScript/ESLint não contém erros de sintaxe ou configuração.
+- [x] 1. Criar um diretório temporário `temp-next-app` na raiz do projeto.
+- [x] 2. Executar o comando `npx -y create-next-app@latest temp-next-app --typescript --eslint --app --src-dir --no-tailwind --use-npm --yes`.
+- [x] 3. Mover todos os arquivos e pastas ocultas de `temp-next-app` para a raiz do workspace (incluindo `src/`, `public/`, `eslint.config.mjs`, `next.config.ts`, `package.json`, `tsconfig.json`, `next-env.d.ts`).
+- [x] 4. Mesclar as entradas geradas de `.gitignore` com o `.gitignore` existente no projeto (mantendo regras de `.env.local` e `.next`).
+- [x] 5. Remover o diretório temporário `temp-next-app` esvaziado.
+- [x] 6. Modificar o arquivo `/package.json` para adicionar dependências extras (`jszip` e `lucide-react`).
+- [x] 7. Adicionar o script `"postinstall": "playwright install chromium"` no arquivo `/package.json`.
+- [x] 8. Executar `npm install` na raiz para consolidar e baixar todas as novas dependências (`jszip`, `lucide-react`, `playwright`).
+- [x] 9. Executar `npx playwright install chromium` para certificar que o executável do Chromium está disponível na máquina local.
+- [x] 10. Criar o arquivo `/.env.local.example` com os templates de variáveis de ambiente.
+- [x] 11. Copiar o arquivo `/.env.local.example` para `/.env.local` (este arquivo será modificado manualmente depois com a API Key real).
+- [x] 12. Criar a pasta `/identidade/` na raiz do projeto.
+- [x] 13. Criar o arquivo `/identidade/design-guide.md` com a especificação visual detalhada do estilo Criador Solo terroso (cores, tipografia, bordas, restrições).
+- [x] 14. Rodar o comando `npm run dev` para garantir que o servidor Next.js inicia corretamente na porta 3000.
+- [x] 15. Acessar `http://localhost:3000` via curl ou navegador e verificar se a página padrão inicial do Next.js é exibida sem erros.
+- [x] 16. Executar o linter `npm run lint` para garantir que o setup inicial do TypeScript/ESLint não contém erros de sintaxe ou configuração.
 

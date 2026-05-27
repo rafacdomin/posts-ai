@@ -6,10 +6,10 @@ Este painel gerencia a evolução da implementação do projeto **posts-ai**, di
 
 ## Status do Épico
 - **Total de Issues:** 6
-- **Pendentes (`[ ]`):** 6
+- **Pendentes (`[ ]`):** 5
 - **Em Andamento (`[/]`):** 0
-- **Concluídas (`[x]`):** 0
-- **Progresso Geral:** 0%
+- **Concluídas (`[x]`):** 1
+- **Progresso Geral:** 17%
 
 ---
 
@@ -17,7 +17,7 @@ Este painel gerencia a evolução da implementação do projeto **posts-ai**, di
 
 | ID | Issue | Status | Dependências | Estimativa |
 |---|---|:---:|---|:---:|
-| **001** | [Setup do Boilerplate Next.js](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/001_setup_boilerplate.md) | `[ ]` | Nenhuma | P |
+| **001** | [Setup do Boilerplate Next.js](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/001_setup_boilerplate.md) | `[x]` | Nenhuma | P |
 | **002** | [Serviços de IA e Leitura de Estilo](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/002_service_ai_and_style.md) | `[ ]` | 001 | M |
 | **003** | [Rota de Geração (/api/generate)](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/003_api_generate.md) | `[ ]` | 002 | P |
 | **004** | [Rota de Renderização (/api/render)](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/004_api_render_playwright.md) | `[ ]` | 001 | G |
