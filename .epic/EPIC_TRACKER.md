@@ -6,10 +6,10 @@ Este painel gerencia a evolução da implementação do projeto **posts-ai**, di
 
 ## Status do Épico
 - **Total de Issues:** 6
-- **Pendentes (`[ ]`):** 4
+- **Pendentes (`[ ]`):** 3
 - **Em Andamento (`[/]`):** 0
-- **Concluídas (`[x]`):** 2
-- **Progresso Geral:** 33%
+- **Concluídas (`[x]`):** 3
+- **Progresso Geral:** 50%
 
 ---
 
@@ -19,7 +19,7 @@ Este painel gerencia a evolução da implementação do projeto **posts-ai**, di
 |---|---|:---:|---|:---:|
 | **001** | [Setup do Boilerplate Next.js](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/001_setup_boilerplate.md) | `[x]` | Nenhuma | P |
 | **002** | [Serviços de IA e Leitura de Estilo](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/002_service_ai_and_style.md) | `[x]` | 001 | M |
-| **003** | [Rota de Geração (/api/generate)](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/003_api_generate.md) | `[ ]` | 002 | P |
+| **003** | [Rota de Geração (/api/generate)](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/003_api_generate.md) | `[x]` | 002 | P |
 | **004** | [Rota de Renderização (/api/render)](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/004_api_render_playwright.md) | `[ ]` | 001 | G |
 | **005** | [Componente React de Preview (IframePreview)](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/005_frontend_iframe_preview.md) | `[ ]` | 001 | M |
 | **006** | [Painel Principal (Dashboard UI) e Estilização](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/006_frontend_dashboard.md) | `[ ]` | 003, 004, 005 | G |
