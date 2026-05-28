@@ -9,7 +9,7 @@ Implementar o painel principal (`src/app/page.tsx`) e a folha de estilos globais
   - Campo de texto (textarea) para inserir o tema/roteiro do post.
   - Campo de texto (textarea) expansível para diretrizes de estilo, pré-preenchido com a identidade padrão carregada na inicialização do app.
   - Seletor de Formato (Instagram Feed vs. Stories).
-  - Botão de "Gerar Carrossel" com feedback de carregamento desabilitado quando a requisição está em andamento.
+  - Botão de "Gerar Posts" com feedback de carregamento desabilitado quando a requisição está em andamento.
 - [ ] Criar a área principal com abas (Tabs):
   - **Aba "Visualização":** Exibe o componente `IframePreview`, botões de navegação "Anterior" e "Próximo", e um contador de slides (ex: `Slide 2 / 5`).
   - **Aba "Legenda":** Exibe a legenda em formato markdown com um botão rápido de "Copiar Legenda".

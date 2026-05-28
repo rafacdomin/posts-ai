@@ -36,7 +36,7 @@ A aplicação permite que o usuário insira um tema ou roteiro, selecione diretr
 ### Fluxo Principal
 1. **Configuração de Estilo:** O sistema tenta ler o arquivo `identidade/design-guide.md` local se existir. Caso contrário, carrega uma identidade visual padrão de marca (estilo "Agência de Performance" ou "Criador Solo").
 2. **Entrada de Conteúdo:** O usuário acessa o dashboard e insere o tema/roteiro do post no campo de texto.
-3. **Geração:** O usuário clica em "Gerar Carrossel".
+3. **Geração:** O usuário clica em "Gerar Posts".
    * A rota `/api/generate` é chamada.
    * O backend lê a identidade visual e o tema, constrói o prompt estruturado e faz a chamada ao OpenRouter.
    * O OpenRouter retorna um JSON com o HTML/CSS dos slides e a legenda.

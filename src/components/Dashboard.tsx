@@ -21,25 +21,73 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<"preview" | "caption" | "code">("preview");
   const [copiedCaption, setCopiedCaption] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
-  // Calcular quantidade de slides no HTML gerado
-  const matches = generatedData?.html ? generatedData.html.match(/class=["'][^"']*slide[^"']*["']/g) : null;
+  const [copiedTheme, setCopiedTheme] = useState(false);
+  const [copiedStyleGuide, setCopiedStyleGuide] = useState(false);
+  // Calcular quantidade de slides no HTML gerado (busca exatamente a classe "slide" separada por espaços)
+  const matches = generatedData?.html ? generatedData.html.match(/class=["'](?:[^"']*\s)?slide(?:\s[^"']*)?["']/g) : null;
   const slideCount = matches ? matches.length : 0;
 
   // Função para copiar texto para a área de transferência
-  const copyToClipboard = async (text: string, type: "caption" | "code") => {
+  const copyToClipboard = async (text: string, type: "caption" | "code" | "theme" | "style") => {
     try {
       await navigator.clipboard.writeText(text);
       if (type === "caption") {
         setCopiedCaption(true);
         setTimeout(() => setCopiedCaption(false), 2000);
-      } else {
+      } else if (type === "code") {
         setCopiedCode(true);
         setTimeout(() => setCopiedCode(false), 2000);
+      } else if (type === "theme") {
+        setCopiedTheme(true);
+        setTimeout(() => setCopiedTheme(false), 2000);
+      } else if (type === "style") {
+        setCopiedStyleGuide(true);
+        setTimeout(() => setCopiedStyleGuide(false), 2000);
       }
     } catch {
       alert("Erro ao copiar texto.");
     }
   };
+
+  const [sidebarWidth, setSidebarWidth] = useState(380);
+  const [isResizing, setIsResizing] = useState(false);
+
+  const startResizing = (mouseDownEvent: React.MouseEvent) => {
+    mouseDownEvent.preventDefault();
+    setIsResizing(true);
+  };
+
+  React.useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (mouseMoveEvent: MouseEvent) => {
+      const minWidth = 260;
+      const maxWidth = Math.min(600, window.innerWidth * 0.45);
+      const newWidth = Math.max(minWidth, Math.min(maxWidth, mouseMoveEvent.clientX));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+
+    const iframes = document.querySelectorAll("iframe");
+    iframes.forEach((iframe) => {
+      iframe.style.pointerEvents = "none";
+    });
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      
+      iframes.forEach((iframe) => {
+        iframe.style.pointerEvents = "auto";
+      });
+    };
+  }, [isResizing]);
 
   // Enviar tema e estilo para a API de geração
   const handleGenerate = async (e: React.FormEvent) => {
@@ -150,7 +198,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
   return (
     <div className="dashboard-layout">
       {/* Sidebar de Entradas */}
-      <aside className="dashboard-sidebar">
+      <aside className="dashboard-sidebar" style={{ width: `${sidebarWidth}px` }}>
         <div className="brand-header">
           <div className="brand-logo">✨</div>
           <div>
@@ -161,9 +209,20 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
 
         <form onSubmit={handleGenerate} className="dashboard-form">
           <div className="form-group">
-            <label htmlFor="theme" className="form-label">
-              Qual é o Tema ou Roteiro do Post?
-            </label>
+            <div className="form-label-row">
+              <label htmlFor="theme" className="form-label">
+                Qual é o Tema ou Roteiro do Post?
+              </label>
+              <button
+                type="button"
+                className="copy-input-btn"
+                onClick={() => copyToClipboard(theme, "theme")}
+                disabled={!theme}
+                title="Copiar Tema/Roteiro"
+              >
+                {copiedTheme ? <Check size={14} /> : <Copy size={14} />}
+              </button>
+            </div>
             <textarea
               id="theme"
               className="form-input text-area-theme"
@@ -176,9 +235,20 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="styleGuide" className="form-label">
-              Manual de Estilo da Marca (Design Guide Markdown)
-            </label>
+            <div className="form-label-row">
+              <label htmlFor="styleGuide" className="form-label">
+                Manual de Estilo da Marca (Design Guide Markdown)
+              </label>
+              <button
+                type="button"
+                className="copy-input-btn"
+                onClick={() => copyToClipboard(styleGuide, "style")}
+                disabled={!styleGuide}
+                title="Copiar Manual de Estilo"
+              >
+                {copiedStyleGuide ? <Check size={14} /> : <Copy size={14} />}
+              </button>
+            </div>
             <textarea
               id="styleGuide"
               className="form-input text-area-style"
@@ -213,10 +283,14 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
 
           <button type="submit" className="submit-btn" disabled={loading || exporting || !theme.trim()}>
             <Sparkles size={18} />
-            <span>{loading ? "Gerando..." : "Gerar Carrossel"}</span>
+            <span>{loading ? "Gerando..." : "Gerar Posts"}</span>
           </button>
         </form>
       </aside>
+      <div
+        className={`sidebar-resizer ${isResizing ? "is-resizing" : ""}`}
+        onMouseDown={startResizing}
+      />
 
       {/* Área Principal de Exibição / Abas */}
       <main className="dashboard-main">
@@ -226,6 +300,24 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
               <div className="spinner"></div>
               <p className="status-headline">{loading ? "Gerando Carrossel com IA" : "Exportando Criativos"}</p>
               <p className="status-subtext">{statusText}</p>
+              {loading && (
+                <div
+                  style={{
+                    marginTop: "20px",
+                    padding: "12px 16px",
+                    backgroundColor: "rgba(201, 100, 66, 0.1)",
+                    border: "1px solid rgba(201, 100, 66, 0.25)",
+                    borderRadius: "8px",
+                    color: "#f5e6e0",
+                    fontSize: "13px",
+                    lineHeight: "1.5",
+                    maxWidth: "400px",
+                    textAlign: "center"
+                  }}
+                >
+                  ⚠️ <strong>Nota importante:</strong> A geração pode levar de 30 segundos a até 3 minutos dependendo da fila de processamento. Por favor, mantenha esta página aberta.
+                </div>
+              )}
             </div>
           </div>
         ) : errorText ? (
@@ -349,7 +441,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
               <div className="placeholder-icon">🎨</div>
               <h2 className="placeholder-title">Nenhum Post Gerado Ainda</h2>
               <p className="placeholder-subtitle">
-                Digite um tema na barra lateral e clique em <strong>Gerar Carrossel</strong> para criar seus slides e legenda com Inteligência Artificial.
+                Digite um tema na barra lateral e clique em <strong>Gerar Posts</strong> para criar seus slides e legenda com Inteligência Artificial.
               </p>
             </div>
           </div>

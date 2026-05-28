@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 interface IframePreviewProps {
   html: string;
@@ -9,8 +9,24 @@ interface IframePreviewProps {
 function injectActiveSlideStyle(rawHtml: string, activeSlideIndex: number): string {
   const styleOverride = `
 <style id="preview-slide-override">
-  .slide { display: none !important; }
-  .slide:nth-child(${activeSlideIndex + 1}) { display: flex !important; }
+  /* Forçar html e body a não apresentarem barra de rolagem e preencherem toda a viewport */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .slide { 
+    display: none !important; 
+    margin: 0 !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+  .slide:nth-of-type(${activeSlideIndex + 1}) { 
+    display: flex !important; 
+  }
 </style>
 `;
 
@@ -23,34 +39,72 @@ function injectActiveSlideStyle(rawHtml: string, activeSlideIndex: number): stri
 export default function IframePreview({ html, activeSlideIndex, format }: IframePreviewProps) {
   const injectedHtml = injectActiveSlideStyle(html, activeSlideIndex);
 
-  // Definir dimensões nominais (resolução cheia do slide) e simuladas (visualização no painel)
   const isFeed = format === "feed";
-  
   const width = 1080;
   const height = isFeed ? 1350 : 1920;
-  
-  // Escala para caber no container do dashboard
-  const scale = isFeed ? 1 / 3 : 1 / 4; 
-  const containerWidth = isFeed ? 360 : 270;
-  const containerHeight = isFeed ? 450 : 480;
+
+  // Largura máxima nominal (desktop)
+  const maxContainerWidth = isFeed ? 540 : 378;
+
+  // Estado para largura dinâmica do display (responsivo)
+  const [displayWidth, setDisplayWidth] = useState(maxContainerWidth);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Monitorar redimensionamento do contêiner pai para recalcular escala em telas menores (mobile)
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+
+    const updateSize = () => {
+      if (wrapperRef.current) {
+        const rect = wrapperRef.current.getBoundingClientRect();
+        // A largura real disponível no contêiner flex/grid pai
+        const parentWidth = wrapperRef.current.parentElement
+          ? wrapperRef.current.parentElement.getBoundingClientRect().width
+          : rect.width;
+
+        // Se o espaço disponível for menor que a largura nominal, comprime de forma responsiva
+        const targetWidth = Math.min(maxContainerWidth, parentWidth > 0 ? parentWidth : rect.width);
+        setDisplayWidth(targetWidth);
+      }
+    };
+
+    updateSize();
+
+    // ResizeObserver para recalcular sempre que a janela ou contêiner mudar
+    const observer = new ResizeObserver(updateSize);
+    if (wrapperRef.current.parentElement) {
+      observer.observe(wrapperRef.current.parentElement);
+    } else {
+      observer.observe(wrapperRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [format, maxContainerWidth]);
+
+  // Cálculos dinâmicos com base na largura disponível
+  const dynamicScale = displayWidth / width;
+  const displayHeight = displayWidth * (height / width);
 
   return (
     <div
+      ref={wrapperRef}
       style={{
-        width: `${containerWidth}px`,
-        height: `${containerHeight}px`,
+        width: `${displayWidth}px`,
+        maxWidth: `${maxContainerWidth}px`,
+        height: `${displayHeight}px`,
         position: "relative",
         overflow: "hidden",
         borderRadius: "16px",
         boxShadow: "0 10px 30px rgba(0, 0, 0, 0.4)",
         border: "1px solid rgba(255, 255, 255, 0.08)",
         background: "#121214",
-        transition: "width 0.3s ease, height 0.3s ease",
+        transition: "width 0.2s ease, height 0.2s ease", // Transição suave de largura e altura ao mudar de formato
       }}
     >
       <iframe
         title="Carousel Preview"
         srcDoc={injectedHtml}
+        scrolling="no"
         style={{
           width: `${width}px`,
           height: `${height}px`,
@@ -58,7 +112,7 @@ export default function IframePreview({ html, activeSlideIndex, format }: Iframe
           top: 0,
           left: 0,
           border: "none",
-          transform: `scale(${scale})`,
+          transform: `scale(${dynamicScale})`,
           transformOrigin: "top left",
           backgroundColor: "transparent",
         }}

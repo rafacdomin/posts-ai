@@ -69,8 +69,38 @@ export async function POST(request: Request): Promise<Response> {
     // 7. Renderizar screenshots de cada slide
     const zip = new JSZip();
     for (let i = 0; i < slides.length; i++) {
-      const slide = slides[i];
-      const screenshotBuffer = await slide.screenshot({ type: "png" });
+      // Ocultar todos os slides e posicionar o atual no topo (0,0) ocupando toda a viewport
+      await page.evaluate((index) => {
+        // Remover margens/paddings do html/body que possam causar desalinhamento
+        const html = document.documentElement;
+        const body = document.body;
+        html.style.margin = "0";
+        html.style.padding = "0";
+        html.style.overflow = "hidden";
+        body.style.margin = "0";
+        body.style.padding = "0";
+        body.style.overflow = "hidden";
+
+        const allSlides = document.querySelectorAll(".slide");
+        allSlides.forEach((s, idx) => {
+          const el = s as HTMLElement;
+          if (idx === index) {
+            el.style.display = "flex";
+            el.style.position = "absolute";
+            el.style.top = "0";
+            el.style.left = "0";
+            el.style.margin = "0";
+          } else {
+            el.style.display = "none";
+          }
+        });
+      }, i);
+
+      // Pequena pausa para garantir renderização do layout e fontes
+      await page.waitForTimeout(100);
+
+      // Capturar a viewport inteira (que está dimensionada exatamente para o slide)
+      const screenshotBuffer = await page.screenshot({ type: "png" });
       zip.file(`slide-${i + 1}.png`, screenshotBuffer);
     }
 

@@ -66,6 +66,38 @@ body {
   flex-shrink: 0;
 }
 
+/* Sidebar Resizer */
+.sidebar-resizer {
+  width: 6px;
+  cursor: col-resize;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.sidebar-resizer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 2px;
+  width: 2px;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-resizer:hover::after,
+.sidebar-resizer.is-resizing::after {
+  background-color: var(--border-focus);
+}
+
+.sidebar-resizer:hover,
+.sidebar-resizer.is-resizing {
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
 .brand-header {
   display: flex;
   align-items: center;
@@ -109,10 +141,46 @@ body {
   gap: 10px;
 }
 
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .form-label {
   font-size: 13px;
   font-weight: 500;
   color: var(--text-main);
+  margin: 0;
+}
+
+.copy-input-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.copy-input-btn:hover:not(:disabled) {
+  color: var(--text-main);
+  background-color: var(--border-light);
+}
+
+.copy-input-btn:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
+
+.copy-input-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .form-input {
@@ -542,10 +610,13 @@ body {
     flex-direction: column;
   }
   .dashboard-sidebar {
-    width: 100%;
+    width: 100% !important;
     border-right: none;
     border-bottom: 1px solid var(--border-light);
     padding: 24px;
+  }
+  .sidebar-resizer {
+    display: none;
   }
   .text-area-style {
     height: 120px;
