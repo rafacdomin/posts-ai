@@ -1,14 +1,14 @@
 # Épico: Gerador de Posts Instagram com IA — Painel de Acompanhamento
 
-Este painel gerencia a evolução da implementação do projeto **posts-ai**, dividida em 6 tarefas (issues) sequenciais e atômicas.
+Este painel gerencia a evolução da implementação do projeto **posts-ai**, dividida em 7 tarefas (issues) sequenciais e atômicas.
 
 ---
 
 ## Status do Épico
-- **Total de Issues:** 6
+- **Total de Issues:** 7
 - **Pendentes (`[ ]`):** 0
 - **Em Andamento (`[/]`):** 0
-- **Concluídas (`[x]`):** 6
+- **Concluídas (`[x]`):** 7
 - **Progresso Geral:** 100%
 
 ---
@@ -23,6 +23,7 @@ Este painel gerencia a evolução da implementação do projeto **posts-ai**, di
 | **004** | [Rota de Renderização (/api/render)](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/004_api_render_playwright.md) | `[x]` | 001 | G |
 | **005** | [Componente React de Preview (IframePreview)](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/005_frontend_iframe_preview.md) | `[x]` | 001 | M |
 | **006** | [Painel Principal (Dashboard UI) e Estilização](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/006_frontend_dashboard.md) | `[x]` | 003, 004, 005 | G |
+| **007** | [Mover o Mock para a Tab "Exemplo"](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/007_move_mock_to_example_tab.md) | `[x]` | 006 | P |
 
 ---
 
@@ -38,6 +39,7 @@ graph TD
     004["004: API Render (G)"]
     005["005: Iframe Preview (M)"]
     006["006: Frontend Dashboard (G)"]
+    007["007: Mover o Mock para Tab Exemplo (P)"]
 
     002 --> 001
     003 --> 002
@@ -46,10 +48,11 @@ graph TD
     006 --> 003
     006 --> 004
     006 --> 005
+    007 --> 006
 ```
 
 ---
 
 ## Próximo Passo
 1. Solicitar aprovação do arquiteto/líder técnico.
-2. Iniciar a issue [001 — Setup do Boilerplate Next.js](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/001_setup_boilerplate.md) usando o workflow `/plan` e `/execute`.
+2. Iniciar a issue [007 — Mover o Mock para a Tab "Exemplo"](file:///home/rafacdomin/projetos/posts-ai/.epic/issues/007_move_mock_to_example_tab.md) usando o workflow `/plan` e `/execute`.

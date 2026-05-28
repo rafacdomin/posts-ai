@@ -2,7 +2,7 @@ import { CarouselData } from "@/types";
 import { MockAIService } from "./mock-service";
 import { OpenRouterAIService } from "./openrouter-service";
 
-export { MockAIService } from "./mock-service";
+export { MockAIService, getMockData } from "./mock-service";
 export { OpenRouterAIService } from "./openrouter-service";
 
 export interface AIService {

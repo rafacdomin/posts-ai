@@ -8,19 +8,21 @@ import { useResizableSidebar } from "@/hooks/useResizableSidebar";
 
 interface DashboardProps {
   initialStyleGuide: string;
+  mockHtml: string;
 }
 
-export default function Dashboard({ initialStyleGuide }: DashboardProps) {
+export default function Dashboard({ initialStyleGuide, mockHtml }: DashboardProps) {
   const [theme, setTheme] = useState("");
   const [styleGuide, setStyleGuide] = useState(initialStyleGuide);
   const [format, setFormat] = useState<"feed" | "stories">("feed");
   const [activeSlide, setActiveSlide] = useState(0);
+  const [activeExampleSlide, setActiveExampleSlide] = useState(0);
   const [generatedData, setGeneratedData] = useState<{ html: string; caption: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [statusText, setStatusText] = useState("");
   const [errorText, setErrorText] = useState("");
-  const [activeTab, setActiveTab] = useState<"preview" | "caption" | "code">("preview");
+  const [activeTab, setActiveTab] = useState<"preview" | "caption" | "code" | "exemplo">("preview");
 
   const { copiedType, copy } = useClipboard();
   const { sidebarWidth, isResizing, startResizing } = useResizableSidebar();
@@ -35,6 +37,12 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
     const matches = generatedData?.html ? generatedData.html.match(/class=["'](?:[^"']*\s)?slide(?:\s[^"']*)?["']/g) : null;
     return matches ? matches.length : 0;
   }, [generatedData]);
+
+  // Calcular quantidade de slides no HTML do exemplo
+  const exampleSlideCount = useMemo(() => {
+    const matches = mockHtml.match(/class=["'](?:[^"']*\s)?slide(?:\s[^"']*)?["']/g);
+    return matches ? matches.length : 0;
+  }, [mockHtml]);
 
   // Enviar tema e estilo para a API de geração
   const handleGenerate = async (e: React.FormEvent) => {
@@ -265,7 +273,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
               </button>
             </div>
           </div>
-        ) : generatedData ? (
+        ) : (
           <div className="content-container">
             {/* Cabeçalho do Editor */}
             <div className="content-header">
@@ -278,30 +286,90 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
                   <span>Visualização</span>
                 </button>
                 <button
-                  className={`tab-link ${activeTab === "caption" ? "active" : ""}`}
-                  onClick={() => setActiveTab("caption")}
+                  className={`tab-link ${activeTab === "caption" ? "active" : ""} ${!generatedData ? "disabled" : ""}`}
+                  onClick={() => generatedData && setActiveTab("caption")}
+                  disabled={!generatedData}
+                  title={!generatedData ? "Gere um post primeiro" : undefined}
                 >
                   <FileText size={16} />
                   <span>Legenda</span>
                 </button>
                 <button
-                  className={`tab-link ${activeTab === "code" ? "active" : ""}`}
-                  onClick={() => setActiveTab("code")}
+                  className={`tab-link ${activeTab === "code" ? "active" : ""} ${!generatedData ? "disabled" : ""}`}
+                  onClick={() => generatedData && setActiveTab("code")}
+                  disabled={!generatedData}
+                  title={!generatedData ? "Gere um post primeiro" : undefined}
                 >
                   <Code size={16} />
                   <span>Código HTML</span>
                 </button>
+                <button
+                  className={`tab-link ${activeTab === "exemplo" ? "active" : ""}`}
+                  onClick={() => setActiveTab("exemplo")}
+                >
+                  <Sparkles size={16} />
+                  <span>Exemplo</span>
+                </button>
               </div>
 
-              <button onClick={handleExport} className="export-btn">
-                <Download size={16} />
-                <span>Exportar ZIP (PNGs)</span>
-              </button>
+              {generatedData && activeTab !== "exemplo" && (
+                <button onClick={handleExport} className="export-btn">
+                  <Download size={16} />
+                  <span>Exportar ZIP (PNGs)</span>
+                </button>
+              )}
             </div>
 
             {/* Conteúdo Ativo por Aba */}
             <div className="content-body">
-              {activeTab === "preview" && (
+              {activeTab === "exemplo" && (
+                <div className="preview-tab-content">
+                  <div className="preview-display">
+                    <IframePreview
+                      html={mockHtml}
+                      activeSlideIndex={activeExampleSlide}
+                      format={format}
+                    />
+                  </div>
+
+                  {/* Controles de Navegação do Exemplo */}
+                  {exampleSlideCount > 0 && (
+                    <div className="preview-controls">
+                      <button
+                        onClick={() => setActiveExampleSlide((prev) => Math.max(0, prev - 1))}
+                        disabled={activeExampleSlide === 0}
+                        className="control-nav-btn"
+                      >
+                        <ChevronLeft size={20} />
+                      </button>
+                      <span className="slide-indicator">
+                        Slide {activeExampleSlide + 1} de {exampleSlideCount}
+                      </span>
+                      <button
+                        onClick={() => setActiveExampleSlide((prev) => Math.min(exampleSlideCount - 1, prev + 1))}
+                        disabled={activeExampleSlide === exampleSlideCount - 1}
+                        className="control-nav-btn"
+                      >
+                        <ChevronRight size={20} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab !== "exemplo" && !generatedData && (
+                <div className="empty-container">
+                  <div className="empty-placeholder">
+                    <div className="placeholder-icon">🎨</div>
+                    <h2 className="placeholder-title">Nenhum Post Gerado Ainda</h2>
+                    <p className="placeholder-subtitle">
+                      Digite um tema na barra lateral e clique em <strong>Gerar Posts</strong> para criar seus slides e legenda com Inteligência Artificial.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "preview" && generatedData && (
                 <div className="preview-tab-content">
                   <div className="preview-display">
                     <IframePreview
@@ -336,7 +404,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
                 </div>
               )}
 
-              {activeTab === "caption" && (
+              {activeTab === "caption" && generatedData && (
                 <div className="caption-tab-content">
                   <div className="tab-actions">
                     <button
@@ -351,7 +419,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
                 </div>
               )}
 
-              {activeTab === "code" && (
+              {activeTab === "code" && generatedData && (
                 <div className="code-tab-content">
                   <div className="tab-actions">
                     <button
@@ -367,16 +435,6 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
                   </pre>
                 </div>
               )}
-            </div>
-          </div>
-        ) : (
-          <div className="empty-container">
-            <div className="empty-placeholder">
-              <div className="placeholder-icon">🎨</div>
-              <h2 className="placeholder-title">Nenhum Post Gerado Ainda</h2>
-              <p className="placeholder-subtitle">
-                Digite um tema na barra lateral e clique em <strong>Gerar Posts</strong> para criar seus slides e legenda com Inteligência Artificial.
-              </p>
             </div>
           </div>
         )}
