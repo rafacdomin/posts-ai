@@ -64,10 +64,75 @@ export async function POST(request: Request): Promise<Response> {
   const height = format === "feed" ? SLIDE_DIMENSIONS.feedHeight : SLIDE_DIMENSIONS.storiesHeight;
 
   try {
-    // 4. Inicializar navegador
-    browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage();
+    // 4. Inicializar navegador com flags de segurança (sandbox e file-access desabilitados)
+    browser = await chromium.launch({
+      headless: true,
+      args: [
+        "--disable-gpu",
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-local-file-access",
+      ],
+    });
+    
+    // Criar um contexto de navegação isolado
+    const context = await browser.newContext();
+    const page = await context.newPage();
     await page.setViewportSize({ width, height });
+
+    // Interceptar requisições de rede para mitigar SSRF e vazamento de arquivos locais
+    await page.route("**/*", (route) => {
+      const url = route.request().url();
+      
+      // Permitir carregar a página inicial vazia (setContent carrega about:blank)
+      if (url === "about:blank") {
+        route.continue();
+        return;
+      }
+
+      try {
+        const parsedUrl = new URL(url);
+
+        // Permitir estritamente apenas protocolos web http e https
+        if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+          console.warn(`[Security Alert] Requisição bloqueada devido a protocolo inválido: ${url}`);
+          route.abort("blockedbyclient");
+          return;
+        }
+
+        const hostname = parsedUrl.hostname.toLowerCase();
+
+        // Bloquear endereços locais/loopback
+        const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+        
+        // Bloquear intervalos de IPs privados (RFC 1918)
+        const isInternalIP =
+          hostname.startsWith("10.") ||
+          hostname.startsWith("192.168.") ||
+          (hostname.startsWith("172.") &&
+            (() => {
+              const parts = hostname.split(".");
+              const secondOctet = parseInt(parts[1] || "0", 10);
+              return secondOctet >= 16 && secondOctet <= 31;
+            })());
+
+        // Bloquear endpoints de metadados da AWS/GCP/Azure
+        const isCloudMetadata = hostname === "169.254.169.254";
+
+        if (isLocalhost || isInternalIP || isCloudMetadata) {
+          console.warn(`[Security Alert] Bloqueada tentativa de requisição local/interna (SSRF): ${hostname}`);
+          route.abort("addressunreachable");
+          return;
+        }
+
+        // Permitir requisições externas legítimas (ex: Google Fonts)
+        route.continue();
+      } catch (err) {
+        console.error(`[Security Error] Erro ao validar requisição no interceptor de rede: ${url}`, err);
+        route.abort("failed");
+      }
+    });
 
     // 5. Carregar conteúdo e aguardar rede/fontes
     await page.setContent(html, { waitUntil: "networkidle" });

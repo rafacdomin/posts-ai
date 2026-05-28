@@ -18,7 +18,7 @@ export async function getMockData(): Promise<CarouselData> {
 
 export class MockAIService implements AIService {
   async generateCarousel(theme: string, styleGuide: string, _format: SlideFormat): Promise<CarouselData> {
-    console.log("[MockAIService] Geração de Carrossel MOCKADA ativa (Bypass OpenRouter).");
+    console.log(`[MockAIService] Geração de Carrossel MOCKADA ativa (Bypass OpenRouter) para o formato: ${_format}.`);
     console.log(`[MockAIService] Tema solicitado: "${theme}"`);
     console.log(`[MockAIService] Guia de estilo recebido (tamanho): ${styleGuide.length} caracteres.`);
 
