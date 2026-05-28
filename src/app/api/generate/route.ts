@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
-import { OpenRouterAIService } from "@/services/ai";
+import { createAIService } from "@/services/ai";
 import { readStyleGuide } from "@/services/style";
-
-interface GenerateRequest {
-  theme?: string;
-  styleGuide?: string;
-}
+import { GenerateRequest } from "@/types";
 
 export async function POST(request: Request): Promise<Response> {
   console.log("\n[POST /api/generate] Nova requisição recebida no servidor.");
@@ -33,7 +29,9 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  console.log(`[POST /api/generate] Parâmetros válidos. Tema solicitado: "${theme.substring(0, 60)}..."`);
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[POST /api/generate] Parâmetros válidos. Tema solicitado: "${theme.substring(0, 60)}..."`);
+  }
 
   try {
     // 3. Obter estilo visual (se enviado no body, usa ele; senão, lê o local/fallback)
@@ -47,7 +45,7 @@ export async function POST(request: Request): Promise<Response> {
 
     // 4. Instanciar serviço de IA e gerar
     console.log("[POST /api/generate] Acionando OpenRouterAIService...");
-    const aiService = new OpenRouterAIService();
+    const aiService = createAIService();
     const result = await aiService.generateCarousel(theme.trim(), resolvedStyle);
 
     // 5. Retornar resposta de sucesso

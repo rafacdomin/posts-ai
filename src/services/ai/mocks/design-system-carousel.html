@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design System em Aplicações Complexas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --slide-width: 1080px;
+  --slide-height: 1350px;
+  --carbon-escuro: #0B0B0F;
+  --carbon-medio: #1A1A22;
+  --carbon-hover: #22222D;
+  --laranja-cobre: #E35E2D;
+  --branco-neve: #F8FAFC;
+  --branco-suave: #E2E8F0;
+  --cinza-sutil: #475569;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #050507;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.slide {
+  width: var(--slide-width);
+  height: var(--slide-height);
+  background-color: var(--carbon-escuro);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 90px 70px;
+  margin-bottom: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* Marca d'água */
+.slide::before {
+  content: 'DS';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Playfair Display', serif;
+  font-size: 400px;
+  font-weight: 600;
+  color: var(--laranja-cobre);
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.slide > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Barra de progresso no topo */
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: var(--laranja-cobre);
+  border-radius: 0 2px 2px 0;
+  z-index: 10;
+}
+
+/* Numeração de slides */
+.slide-number {
+  position: absolute;
+  bottom: 30px;
+  right: 70px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--branco-neve);
+  opacity: 0.6;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Assinatura */
+.signature {
+  position: absolute;
+  bottom: 30px;
+  left: 70px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--branco-neve);
+  opacity: 0.5;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Régua separadora */
+.ruler {
+  width: 60px;
+  height: 4px;
+  background: var(--laranja-cobre);
+  margin: 20px 0;
+}
+
+/* Conteúdo do slide */
+.slide-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Slide 1 - Capa */
+.slide-cover {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, var(--carbon-escuro) 0%, #171720 50%, var(--carbon-escuro) 100%);
+}
+
+.slide-cover .tag {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--laranja-cobre);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.slide-cover h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 82px;
+  font-weight: 500;
+  color: var(--branco-neve);
+  line-height: 1.1;
+  margin-bottom: 30px;
+}
+
+.slide-cover .subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--branco-suave);
+  line-height: 1.5;
+  max-width: 800px;
+  opacity: 0.9;
+}
+
+.slide-cover .icon-large {
+  font-size: 120px;
+  margin-bottom: 40px;
+  opacity: 0.3;
+}
+
+/* Slides intermediários */
+.slide-inner {
+  background-color: var(--carbon-escuro);
+}
+
+.slide-inner h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 52px;
+  font-weight: 500;
+  color: var(--branco-neve);
+  line-height: 1.2;
+  margin-bottom: 15px;
+}
+
+.slide-inner h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--branco-neve);
+  margin-bottom: 20px;
+}
+
+.slide-inner p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--branco-suave);
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+.slide-inner ul {
+  list-style: none;
+  margin: 30px 0;
+}
+
+.slide-inner ul li {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--branco-suave);
+  line-height: 1.6;
+  padding: 15px 0;
+  padding-left: 40px;
+  position: relative;
+  border-bottom: 1px solid rgba(248, 250, 252, 0.08);
+}
+
+.slide-inner ul li:last-child {
+  border-bottom: none;
+}
+
+.slide-inner ul li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--laranja-cobre);
+  font-weight: 500;
+  font-size: 24px;
+}
+
+/* Cards */
+.card {
+  background-color: var(--carbon-medio);
+  border-radius: 16px;
+  padding: 40px;
+  margin: 20px 0;
+  border: 1px solid rgba(248, 250, 252, 0.08);
+}
+
+.card h4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--branco-neve);
+  margin-bottom: 15px;
+}
+
+.card p {
+  font-size: 24px;
+  margin-bottom: 0;
+}
+
+/* Grid de benefícios */
+.benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin: 30px 0;
+}
+
+.benefit-item {
+  background: linear-gradient(135deg, var(--carbon-medio) 0%, rgba(26, 26, 34, 0.5) 100%);
+  border-radius: 16px;
+  padding: 35px;
+  text-align: center;
+  border: 1px solid rgba(248, 250, 252, 0.06);
+}
+
+.benefit-item .icon {
+  font-size: 50px;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.benefit-item h4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--branco-neve);
+  margin-bottom: 10px;
+}
+
+.benefit-item p {
+  font-size: 18px;
+  color: var(--branco-suave);
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+/* Slide CTA */
+.slide-cta {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(180deg, var(--carbon-escuro) 0%, #07070A 100%);
+}
+
+.slide-cta .logo-icon {
+  width: 180px;
+  height: 180px;
+  background-color: var(--carbon-medio);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 50px;
+  border: 2px solid rgba(227, 94, 45, 0.3);
+}
+
+.slide-cta .logo-icon span {
+  font-family: 'Playfair Display', serif;
+  font-size: 72px;
+  font-weight: 600;
+  color: var(--laranja-cobre);
+}
+
+.slide-cta h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 56px;
+  font-weight: 500;
+  color: var(--branco-neve);
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.slide-cta p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--branco-suave);
+  line-height: 1.5;
+  margin-bottom: 50px;
+  opacity: 0.9;
+}
+
+.slide-cta .cta-button {
+  display: inline-block;
+  background-color: var(--laranja-cobre);
+  color: var(--branco-neve);
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 22px 60px;
+  border-radius: 50px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: none;
+  cursor: pointer;
+  transition: all 300ms ease-out;
+  text-decoration: none;
+}
+
+.slide-cta .cta-button:hover {
+  transform: scale(1.05) translateY(-3px);
+  box-shadow: 0 15px 40px rgba(227, 94, 45, 0.3);
+}
+
+/* Destaque de texto */
+.highlight {
+  color: var(--laranja-cobre);
+  font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<!-- Slide 1: Capa -->
+<div class="slide slide-cover" id="slide-1">
+  <div class="progress-bar" style="width: 20%;"></div>
+  <div class="icon-large">◆</div>
+  <div class="tag">Design System</div>
+  <h1>A Base de<br>Aplicações<br>Complexas</h1>
+  <div class="ruler"></div>
+  <p class="subtitle">Como criar consistência, acessibilidade e escalabilidade em produtos digitais de alta performance</p>
+  <span class="signature">@seu.perfil | Design System Expert</span>
+  <span class="slide-number">1/5</span>
+</div>
+
+<!-- Slide 2: O que é Design System -->
+<div class="slide slide-inner" id="slide-2">
+  <div class="progress-bar" style="width: 40%;"></div>
+  <div class="slide-content">
+    <div class="tag" style="font-size: 14px; font-weight: 600; color: var(--laranja-cobre); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; opacity: 0.8;">Fundamentos</div>
+    <h2>O que é um<br>Design System?</h2>
+    <div class="ruler"></div>
+    <p>Um <span class="highlight">conjunto integrado</span> de componentes, padrões e documentação que guia o desenvolvimento de produtos digitais.</p>
+    <ul>
+      <li>Componentes reutilizáveis</li>
+      <li>Guia de estilo consistente</li>
+      <li>Documentação acessível</li>
+      <li>Padrões de interação</li>
+    </ul>
+  </div>
+  <span class="signature">@seu.perfil | Design System Expert</span>
+  <span class="slide-number">2/5</span>
+</div>
+
+<!-- Slide 3: Benefícios -->
+<div class="slide slide-inner" id="slide-3">
+  <div class="progress-bar" style="width: 60%;"></div>
+  <div class="slide-content">
+    <div class="tag" style="font-size: 14px; font-weight: 600; color: var(--laranja-cobre); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; opacity: 0.8;">Benefícios</div>
+    <h2>Por que investir<br>em Design System?</h2>
+    <div class="ruler"></div>
+    <div class="benefits-grid">
+      <div class="benefit-item">
+        <span class="icon">◈</span>
+        <h4>Consistência</h4>
+        <p>Experiência unificada em todos os pontos de contato</p>
+      </div>
+      <div class="benefit-item">
+        <span class="icon">◈</span>
+        <h4>Acessibilidade</h4>
+        <p>Padrões inclusivos desde a base do projeto</p>
+      </div>
+      <div class="benefit-item">
+        <span class="icon">◈</span>
+        <h4>Velocidade</h4>
+        <p>Redução de até 50% no tempo de desenvolvimento</p>
+      </div>
+      <div class="benefit-item">
+        <span class="icon">◈</span>
+        <h4>Escalabilidade</h4>
+        <p>Crescimento sustentável and organizado</p>
+      </div>
+    </div>
+  </div>
+  <span class="signature">@seu.perfil | Design System Expert</span>
+  <span class="slide-number">3/5</span>
+</div>
+
+<!-- Slide 4: Impacto no Desenvolvimento -->
+<div class="slide slide-inner" id="slide-4">
+  <div class="progress-bar" style="width: 80%;"></div>
+  <div class="slide-content">
+    <div class="tag" style="font-size: 14px; font-weight: 600; color: var(--laranja-cobre); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; opacity: 0.8;">Impacto</div>
+    <h2>Resultados<br>Concretos</h2>
+    <div class="ruler"></div>
+    <div class="card">
+      <h4>📊 50% Mais Rápido</h4>
+      <p>Redução significativa no tempo de entrega de novas funcionalidades e interfaces.</p>
+    </div>
+    <div class="card">
+      <h4>🎯 Zero Inconsistências</h4>
+      <p>Eliminação de variações visuais e comportamentais entre diferentes partes do produto.</p>
+    </div>
+    <div class="card">
+      <h4>🎯 Acessibilidade Nativa</h4>
+      <p>Componentes já construídos seguindo as diretrizes WCAG e melhores práticas.</p>
+    </div>
+  </div>
+  <span class="signature">@seu.perfil | Design System Expert</span>
+  <span class="slide-number">4/5</span>
+</div>
+
+<!-- Slide 5: CTA -->
+<div class="slide slide-cta" id="slide-5">
+  <div class="progress-bar" style="width: 100%;"></div>
+  <div class="logo-icon">
+    <span>DS</span>
+  </div>
+  <h2>Comece a construir<br>seu Design System</h2>
+  <p>Transforme a maneira como sua equipe<br>cria produtos digitais</p>
+  <a href="#" class="cta-button">Salvar este post</a>
+  <div style="margin-top: 40px;">
+    <p style="font-size: 20px; opacity: 0.7;">Compartilhe com alguém que precisa ver isso ✨</p>
+  </div>
+  <span class="signature">@seu.perfil | Design System Expert</span>
+  <span class="slide-number">5/5</span>
+</div>
+
+</body>
+</html>

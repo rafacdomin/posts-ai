@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { SLIDE_DIMENSIONS } from "@/constants";
 
 interface IframePreviewProps {
   html: string;
@@ -40,14 +41,14 @@ export default function IframePreview({ html, activeSlideIndex, format }: Iframe
   const injectedHtml = injectActiveSlideStyle(html, activeSlideIndex);
 
   const isFeed = format === "feed";
-  const width = 1080;
-  const height = isFeed ? 1350 : 1920;
+  const width = SLIDE_DIMENSIONS.width;
+  const height = isFeed ? SLIDE_DIMENSIONS.feedHeight : SLIDE_DIMENSIONS.storiesHeight;
 
   // Largura máxima nominal (desktop)
-  const maxContainerWidth = isFeed ? 540 : 378;
+  const maxContainerWidth = isFeed ? SLIDE_DIMENSIONS.feedMaxContainerWidth : SLIDE_DIMENSIONS.storiesMaxContainerWidth;
 
   // Estado para largura dinâmica do display (responsivo)
-  const [displayWidth, setDisplayWidth] = useState(maxContainerWidth);
+  const [displayWidth, setDisplayWidth] = useState<number>(maxContainerWidth);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Monitorar redimensionamento do contêiner pai para recalcular escala em telas menores (mobile)
@@ -104,7 +105,7 @@ export default function IframePreview({ html, activeSlideIndex, format }: Iframe
       <iframe
         title="Carousel Preview"
         srcDoc={injectedHtml}
-        scrolling="no"
+        sandbox="allow-same-origin"
         style={{
           width: `${width}px`,
           height: `${height}px`,

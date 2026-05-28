@@ -1,20 +1,33 @@
 import { NextResponse } from "next/server";
 import { chromium, Browser } from "playwright";
 import JSZip from "jszip";
-
-interface RenderRequest {
-  html?: string;
-  caption?: string;
-  format?: "feed" | "stories";
-}
+import { RenderRequest } from "@/types";
+import { SLIDE_DIMENSIONS, TIMEOUTS, PAYLOAD_LIMITS } from "@/constants";
 
 export async function POST(request: Request): Promise<Response> {
   let browser: Browser | null = null;
   let body: RenderRequest;
 
-  // 1. Validar se o body é um JSON válido
+  // 1. Validar se o body é um JSON válido e possui tamanho aceitável (< 500KB)
+  let requestText: string;
   try {
-    body = await request.json() as RenderRequest;
+    requestText = await request.text();
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "Falha ao ler o corpo da requisição." },
+      { status: 400 }
+    );
+  }
+
+  if (requestText.length > PAYLOAD_LIMITS.maxRenderSize) { // 500KB
+    return NextResponse.json(
+      { success: false, error: "Payload muito grande. O limite máximo é de 500KB." },
+      { status: 413 }
+    );
+  }
+
+  try {
+    body = JSON.parse(requestText) as RenderRequest;
   } catch {
     return NextResponse.json(
       { success: false, error: "Requisição inválida. O corpo do request deve estar no formato JSON." },
@@ -47,8 +60,8 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   // 3. Definir dimensões da viewport
-  const width = 1080;
-  const height = format === "feed" ? 1350 : 1920;
+  const width = SLIDE_DIMENSIONS.width;
+  const height = format === "feed" ? SLIDE_DIMENSIONS.feedHeight : SLIDE_DIMENSIONS.storiesHeight;
 
   try {
     // 4. Inicializar navegador
@@ -97,7 +110,7 @@ export async function POST(request: Request): Promise<Response> {
       }, i);
 
       // Pequena pausa para garantir renderização do layout e fontes
-      await page.waitForTimeout(100);
+      await page.waitForTimeout(TIMEOUTS.pageWaitMs);
 
       // Capturar a viewport inteira (que está dimensionada exatamente para o slide)
       const screenshotBuffer = await page.screenshot({ type: "png" });
@@ -111,7 +124,7 @@ export async function POST(request: Request): Promise<Response> {
     const zipBuffer = await zip.generateAsync({ type: "uint8array" });
 
     // 10. Retornar resposta binária do ZIP para download
-    return new Response(zipBuffer as unknown as BodyInit, {
+    return new Response(Buffer.from(zipBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/zip",

@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Sparkles, Download, Copy, ChevronLeft, ChevronRight, Eye, FileText, Code, Check } from "lucide-react";
 import IframePreview from "@/components/IframePreview";
+import { useClipboard } from "@/hooks/useClipboard";
+import { useResizableSidebar } from "@/hooks/useResizableSidebar";
 
 interface DashboardProps {
   initialStyleGuide: string;
@@ -19,75 +21,20 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
   const [statusText, setStatusText] = useState("");
   const [errorText, setErrorText] = useState("");
   const [activeTab, setActiveTab] = useState<"preview" | "caption" | "code">("preview");
-  const [copiedCaption, setCopiedCaption] = useState(false);
-  const [copiedCode, setCopiedCode] = useState(false);
-  const [copiedTheme, setCopiedTheme] = useState(false);
-  const [copiedStyleGuide, setCopiedStyleGuide] = useState(false);
+
+  const { copiedType, copy } = useClipboard();
+  const { sidebarWidth, isResizing, startResizing } = useResizableSidebar();
+
+  const copiedCaption = copiedType === "caption";
+  const copiedCode = copiedType === "code";
+  const copiedTheme = copiedType === "theme";
+  const copiedStyleGuide = copiedType === "style";
+
   // Calcular quantidade de slides no HTML gerado (busca exatamente a classe "slide" separada por espaços)
-  const matches = generatedData?.html ? generatedData.html.match(/class=["'](?:[^"']*\s)?slide(?:\s[^"']*)?["']/g) : null;
-  const slideCount = matches ? matches.length : 0;
-
-  // Função para copiar texto para a área de transferência
-  const copyToClipboard = async (text: string, type: "caption" | "code" | "theme" | "style") => {
-    try {
-      await navigator.clipboard.writeText(text);
-      if (type === "caption") {
-        setCopiedCaption(true);
-        setTimeout(() => setCopiedCaption(false), 2000);
-      } else if (type === "code") {
-        setCopiedCode(true);
-        setTimeout(() => setCopiedCode(false), 2000);
-      } else if (type === "theme") {
-        setCopiedTheme(true);
-        setTimeout(() => setCopiedTheme(false), 2000);
-      } else if (type === "style") {
-        setCopiedStyleGuide(true);
-        setTimeout(() => setCopiedStyleGuide(false), 2000);
-      }
-    } catch {
-      alert("Erro ao copiar texto.");
-    }
-  };
-
-  const [sidebarWidth, setSidebarWidth] = useState(380);
-  const [isResizing, setIsResizing] = useState(false);
-
-  const startResizing = (mouseDownEvent: React.MouseEvent) => {
-    mouseDownEvent.preventDefault();
-    setIsResizing(true);
-  };
-
-  React.useEffect(() => {
-    if (!isResizing) return;
-
-    const handleMouseMove = (mouseMoveEvent: MouseEvent) => {
-      const minWidth = 260;
-      const maxWidth = Math.min(600, window.innerWidth * 0.45);
-      const newWidth = Math.max(minWidth, Math.min(maxWidth, mouseMoveEvent.clientX));
-      setSidebarWidth(newWidth);
-    };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-
-    const iframes = document.querySelectorAll("iframe");
-    iframes.forEach((iframe) => {
-      iframe.style.pointerEvents = "none";
-    });
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      
-      iframes.forEach((iframe) => {
-        iframe.style.pointerEvents = "auto";
-      });
-    };
-  }, [isResizing]);
+  const slideCount = useMemo(() => {
+    const matches = generatedData?.html ? generatedData.html.match(/class=["'](?:[^"']*\s)?slide(?:\s[^"']*)?["']/g) : null;
+    return matches ? matches.length : 0;
+  }, [generatedData]);
 
   // Enviar tema e estilo para a API de geração
   const handleGenerate = async (e: React.FormEvent) => {
@@ -216,7 +163,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
               <button
                 type="button"
                 className="copy-input-btn"
-                onClick={() => copyToClipboard(theme, "theme")}
+                onClick={() => copy(theme, "theme")}
                 disabled={!theme}
                 title="Copiar Tema/Roteiro"
               >
@@ -242,7 +189,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
               <button
                 type="button"
                 className="copy-input-btn"
-                onClick={() => copyToClipboard(styleGuide, "style")}
+                onClick={() => copy(styleGuide, "style")}
                 disabled={!styleGuide}
                 title="Copiar Manual de Estilo"
               >
@@ -301,20 +248,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
               <p className="status-headline">{loading ? "Gerando Carrossel com IA" : "Exportando Criativos"}</p>
               <p className="status-subtext">{statusText}</p>
               {loading && (
-                <div
-                  style={{
-                    marginTop: "20px",
-                    padding: "12px 16px",
-                    backgroundColor: "rgba(201, 100, 66, 0.1)",
-                    border: "1px solid rgba(201, 100, 66, 0.25)",
-                    borderRadius: "8px",
-                    color: "#f5e6e0",
-                    fontSize: "13px",
-                    lineHeight: "1.5",
-                    maxWidth: "400px",
-                    textAlign: "center"
-                  }}
-                >
+                <div className="loading-notice">
                   ⚠️ <strong>Nota importante:</strong> A geração pode levar de 30 segundos a até 3 minutos dependendo da fila de processamento. Por favor, mantenha esta página aberta.
                 </div>
               )}
@@ -406,7 +340,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
                 <div className="caption-tab-content">
                   <div className="tab-actions">
                     <button
-                      onClick={() => copyToClipboard(generatedData.caption, "caption")}
+                      onClick={() => copy(generatedData.caption, "caption")}
                       className="action-copy-btn"
                     >
                       {copiedCaption ? <Check size={16} /> : <Copy size={16} />}
@@ -421,7 +355,7 @@ export default function Dashboard({ initialStyleGuide }: DashboardProps) {
                 <div className="code-tab-content">
                   <div className="tab-actions">
                     <button
-                      onClick={() => copyToClipboard(generatedData.html, "code")}
+                      onClick={() => copy(generatedData.html, "code")}
                       className="action-copy-btn"
                     >
                       {copiedCode ? <Check size={16} /> : <Copy size={16} />}
