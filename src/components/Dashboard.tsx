@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Sparkles, Download, Copy, ChevronLeft, ChevronRight, Eye, FileText, Code, Check } from "lucide-react";
-import IframePreview from "@/components/IframePreview";
+import { Sparkles, Download, Copy, Eye, FileText, Code, Check } from "lucide-react";
 import { useClipboard } from "@/hooks/useClipboard";
 import { useResizableSidebar } from "@/hooks/useResizableSidebar";
+import DashboardSidebar from "./DashboardSidebar";
+import SlideViewer from "./SlideViewer";
 
 interface DashboardProps {
   initialStyleGuide: string;
@@ -153,95 +154,21 @@ export default function Dashboard({ initialStyleGuide, mockHtml }: DashboardProp
   return (
     <div className="dashboard-layout">
       {/* Sidebar de Entradas */}
-      <aside className="dashboard-sidebar" style={{ width: `${sidebarWidth}px` }}>
-        <div className="brand-header">
-          <div className="brand-logo">✨</div>
-          <div>
-            <h1 className="brand-title">Posts AI</h1>
-            <p className="brand-subtitle">Gerador de Carrosséis</p>
-          </div>
-        </div>
-
-        <form onSubmit={handleGenerate} className="dashboard-form">
-          <div className="form-group">
-            <div className="form-label-row">
-              <label htmlFor="theme" className="form-label">
-                Qual é o Tema ou Roteiro do Post?
-              </label>
-              <button
-                type="button"
-                className="copy-input-btn"
-                onClick={() => copy(theme, "theme")}
-                disabled={!theme}
-                title="Copiar Tema/Roteiro"
-              >
-                {copiedTheme ? <Check size={14} /> : <Copy size={14} />}
-              </button>
-            </div>
-            <textarea
-              id="theme"
-              className="form-input text-area-theme"
-              placeholder="Ex: 5 dicas essenciais para otimizar suas consultas SQL usando índices compostos..."
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              disabled={loading || exporting}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <div className="form-label-row">
-              <label htmlFor="styleGuide" className="form-label">
-                Manual de Estilo da Marca (Design Guide Markdown)
-              </label>
-              <button
-                type="button"
-                className="copy-input-btn"
-                onClick={() => copy(styleGuide, "style")}
-                disabled={!styleGuide}
-                title="Copiar Manual de Estilo"
-              >
-                {copiedStyleGuide ? <Check size={14} /> : <Copy size={14} />}
-              </button>
-            </div>
-            <textarea
-              id="styleGuide"
-              className="form-input text-area-style"
-              placeholder="Insira as diretrizes visuais do post..."
-              value={styleGuide}
-              onChange={(e) => setStyleGuide(e.target.value)}
-              disabled={loading || exporting}
-            />
-          </div>
-
-          <div className="form-group">
-            <span className="form-label">Formato de Exportação</span>
-            <div className="format-toggle-group">
-              <button
-                type="button"
-                className={`format-btn ${format === "feed" ? "active" : ""}`}
-                onClick={() => setFormat("feed")}
-                disabled={loading || exporting}
-              >
-                Feed (4:5)
-              </button>
-              <button
-                type="button"
-                className={`format-btn ${format === "stories" ? "active" : ""}`}
-                onClick={() => setFormat("stories")}
-                disabled={loading || exporting}
-              >
-                Stories (9:16)
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" className="submit-btn" disabled={loading || exporting || !theme.trim()}>
-            <Sparkles size={18} />
-            <span>{loading ? "Gerando..." : "Gerar Posts"}</span>
-          </button>
-        </form>
-      </aside>
+      <DashboardSidebar
+        theme={theme}
+        setTheme={setTheme}
+        styleGuide={styleGuide}
+        setStyleGuide={setStyleGuide}
+        format={format}
+        setFormat={setFormat}
+        sidebarWidth={sidebarWidth}
+        loading={loading}
+        exporting={exporting}
+        copiedTheme={copiedTheme}
+        copiedStyleGuide={copiedStyleGuide}
+        onCopy={copy}
+        onGenerate={handleGenerate}
+      />
       <div
         className={`sidebar-resizer ${isResizing ? "is-resizing" : ""}`}
         onMouseDown={startResizing}
@@ -323,38 +250,13 @@ export default function Dashboard({ initialStyleGuide, mockHtml }: DashboardProp
             {/* Conteúdo Ativo por Aba */}
             <div className="content-body">
               {activeTab === "exemplo" && (
-                <div className="preview-tab-content">
-                  <div className="preview-display">
-                    <IframePreview
-                      html={mockHtml}
-                      activeSlideIndex={activeExampleSlide}
-                      format={format}
-                    />
-                  </div>
-
-                  {/* Controles de Navegação do Exemplo */}
-                  {exampleSlideCount > 0 && (
-                    <div className="preview-controls">
-                      <button
-                        onClick={() => setActiveExampleSlide((prev) => Math.max(0, prev - 1))}
-                        disabled={activeExampleSlide === 0}
-                        className="control-nav-btn"
-                      >
-                        <ChevronLeft size={20} />
-                      </button>
-                      <span className="slide-indicator">
-                        Slide {activeExampleSlide + 1} de {exampleSlideCount}
-                      </span>
-                      <button
-                        onClick={() => setActiveExampleSlide((prev) => Math.min(exampleSlideCount - 1, prev + 1))}
-                        disabled={activeExampleSlide === exampleSlideCount - 1}
-                        className="control-nav-btn"
-                      >
-                        <ChevronRight size={20} />
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <SlideViewer
+                  html={mockHtml}
+                  activeSlide={activeExampleSlide}
+                  setActiveSlide={setActiveExampleSlide}
+                  slideCount={exampleSlideCount}
+                  format={format}
+                />
               )}
 
               {activeTab !== "exemplo" && !generatedData && (
@@ -370,38 +272,13 @@ export default function Dashboard({ initialStyleGuide, mockHtml }: DashboardProp
               )}
 
               {activeTab === "preview" && generatedData && (
-                <div className="preview-tab-content">
-                  <div className="preview-display">
-                    <IframePreview
-                      html={generatedData.html}
-                      activeSlideIndex={activeSlide}
-                      format={format}
-                    />
-                  </div>
-
-                  {/* Controles de Navegação */}
-                  {slideCount > 0 && (
-                    <div className="preview-controls">
-                      <button
-                        onClick={() => setActiveSlide((prev) => Math.max(0, prev - 1))}
-                        disabled={activeSlide === 0}
-                        className="control-nav-btn"
-                      >
-                        <ChevronLeft size={20} />
-                      </button>
-                      <span className="slide-indicator">
-                        Slide {activeSlide + 1} de {slideCount}
-                      </span>
-                      <button
-                        onClick={() => setActiveSlide((prev) => Math.min(slideCount - 1, prev + 1))}
-                        disabled={activeSlide === slideCount - 1}
-                        className="control-nav-btn"
-                      >
-                        <ChevronRight size={20} />
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <SlideViewer
+                  html={generatedData.html}
+                  activeSlide={activeSlide}
+                  setActiveSlide={setActiveSlide}
+                  slideCount={slideCount}
+                  format={format}
+                />
               )}
 
               {activeTab === "caption" && generatedData && (

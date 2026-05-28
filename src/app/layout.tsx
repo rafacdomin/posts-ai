@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Posts AI — Gerador de Carrosséis",
-  description: "Gere posts de carrossel em HTML + CSS com IA e exporte em imagens PNG de alta resolução para o Instagram.",
+  title: "Posts AI — Gerador de Posts para o Instagram",
+  description: "Gere posts em HTML + CSS com IA e exporte em imagens PNG de alta resolução para o Instagram.",
 };
 
 export default function RootLayout({
