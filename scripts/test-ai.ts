@@ -15,7 +15,8 @@ async function main() {
   try {
     const result = await ai.generateCarousel(
       "3 passos rápidos para otimizar suas consultas SQL com índices e performance",
-      style
+      style,
+      "feed"
     );
 
     console.log("\n====================================");

@@ -14,4 +14,5 @@ export interface RenderRequest {
 export interface GenerateRequest {
   theme?: string;
   styleGuide?: string;
+  format?: SlideFormat;
 }

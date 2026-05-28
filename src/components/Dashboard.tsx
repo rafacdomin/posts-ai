@@ -74,6 +74,7 @@ export default function Dashboard({ initialStyleGuide, mockHtml }: DashboardProp
         body: JSON.stringify({
           theme: theme.trim(),
           styleGuide: styleGuide.trim(),
+          format: format,
         }),
       });
 
@@ -180,7 +181,7 @@ export default function Dashboard({ initialStyleGuide, mockHtml }: DashboardProp
           <div className="status-container">
             <div className="status-card">
               <div className="spinner"></div>
-              <p className="status-headline">{loading ? "Gerando Carrossel com IA" : "Exportando Criativos"}</p>
+              <p className="status-headline">{loading ? "Gerando Post com IA" : "Exportando Criativos"}</p>
               <p className="status-subtext">{statusText}</p>
               {loading && (
                 <div className="loading-notice">

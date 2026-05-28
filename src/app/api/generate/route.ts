@@ -18,7 +18,7 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  const { theme, styleGuide } = body;
+  const { theme, styleGuide, format } = body;
 
   // 2. Validar que o campo theme é obrigatório e válido
   if (!theme || typeof theme !== "string" || theme.trim().length === 0) {
@@ -29,8 +29,11 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
+  // Validar e normalizar o formato do slide (feed ou stories)
+  const resolvedFormat = (format === "feed" || format === "stories") ? format : "feed";
+
   if (process.env.NODE_ENV === "development") {
-    console.log(`[POST /api/generate] Parâmetros válidos. Tema solicitado: "${theme.substring(0, 60)}..."`);
+    console.log(`[POST /api/generate] Parâmetros válidos. Tema solicitado: "${theme.substring(0, 60)}..." | Formato: ${resolvedFormat}`);
   }
 
   try {
@@ -46,7 +49,7 @@ export async function POST(request: Request): Promise<Response> {
     // 4. Instanciar serviço de IA e gerar
     console.log("[POST /api/generate] Acionando OpenRouterAIService...");
     const aiService = createAIService();
-    const result = await aiService.generateCarousel(theme.trim(), resolvedStyle);
+    const result = await aiService.generateCarousel(theme.trim(), resolvedStyle, resolvedFormat);
 
     // 5. Retornar resposta de sucesso
     console.log("[POST /api/generate] Geração realizada com sucesso. Retornando dados ao cliente.");

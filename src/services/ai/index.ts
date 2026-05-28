@@ -1,4 +1,4 @@
-import { CarouselData } from "@/types";
+import { CarouselData, SlideFormat } from "@/types";
 import { MockAIService } from "./mock-service";
 import { OpenRouterAIService } from "./openrouter-service";
 
@@ -6,7 +6,7 @@ export { MockAIService, getMockData } from "./mock-service";
 export { OpenRouterAIService } from "./openrouter-service";
 
 export interface AIService {
-  generateCarousel(theme: string, styleGuide: string): Promise<CarouselData>;
+  generateCarousel(theme: string, styleGuide: string, format: SlideFormat): Promise<CarouselData>;
 }
 
 export function createAIService(): AIService {

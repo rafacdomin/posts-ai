@@ -1,4 +1,4 @@
-import { CarouselData } from "@/types";
+import { CarouselData, SlideFormat } from "@/types";
 import { AIService } from "./index";
 
 export class OpenRouterAIService implements AIService {
@@ -10,10 +10,14 @@ export class OpenRouterAIService implements AIService {
     this.model = process.env.DEFAULT_AI_MODEL || "anthropic/claude-3.5-sonnet";
   }
 
-  async generateCarousel(theme: string, styleGuide: string): Promise<CarouselData> {
+  async generateCarousel(theme: string, styleGuide: string, format: SlideFormat): Promise<CarouselData> {
     if (!this.apiKey) {
       throw new Error("Erro de Servidor: A variável de ambiente OPENROUTER_API_KEY não foi configurada.");
     }
+
+    const isFeed = format === "feed";
+    const targetHeight = isFeed ? 1350 : 1920;
+    const formatName = isFeed ? "Feed (proporção 4:5)" : "Stories (proporção 9:16)";
 
     const systemPrompt = `Você é um designer gráfico e copywriter profissional especialista em redes sociais (Instagram). 
 Sua tarefa é criar um carrossel de slides em HTML + CSS e uma legenda persuasiva com base no TEMA fornecido pelo usuário e respeitando rigorosamente o GUIA DE ESTILO da marca.
@@ -25,10 +29,10 @@ Você deve responder estritamente com um objeto JSON válido, contendo duas chav
 Diretrizes Críticas para o HTML/CSS:
 - O HTML deve conter uma série de divs com a classe "slide" (ex: <div class="slide" id="slide-1">...</div>). Cada slide representa uma imagem individual do carrossel.
 - O CSS deve ser embutido em uma única tag <style> no <head>. Não use links de estilos externos além de fontes do Google Fonts (carregadas via @import no início do CSS).
-- Use as variáveis CSS na raiz (:root) para definir as dimensões do slide de acordo com as seguintes regras de proporção (por padrão use Feed):
+- O post deve ser gerado especificamente no formato ${formatName}. Use as variáveis CSS exatas na raiz (:root) para definir as dimensões do slide:
   :root {
     --slide-width: 1080px;
-    --slide-height: 1350px; /* Alterado para 1920px quando renderizado para Stories */
+    --slide-height: ${targetHeight}px;
   }
 - Cada div ".slide" deve ler estas variáveis:
   .slide {
